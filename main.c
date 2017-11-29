@@ -110,7 +110,6 @@ int checkArgs(char *args[],int ct){
         else if(!strcmp(bm_dlt,args[1])||!strcmp(bm_idx,args[1]))
             needed=1;
         if(!needed){
-
         }
     }
 }
