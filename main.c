@@ -2,13 +2,23 @@
 #include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
+#include <zconf.h>
 
-#define MAX_LINE 80 /* 80 chars per line, per command, should be enough. */
+#define MAX_LINE 128 /* 80 chars per line, per command, should be enough. */
 
 /* The setup function below will not return any value, but it will just: read
 in the next command line; separate it into distinct arguments (using blanks as
 delimiters), and set the args array entries to point to the beginning of what
 will become null-terminated, C-style strings. */
+char cmm_bookmark[80]="bookmark";
+char bm_list[3]="-l";
+char bm_idx[3]="-i";
+char bm_dlt[3]="-d";
+char cmm_codesearch[80]="codesearch";
+char cs_rec[3]="-r";
+char cmm_print[80]="print";
+char cmm_set[80]="set";
 
 void setup(char inputBuffer[], char *args[],int *background)
 {
@@ -18,7 +28,6 @@ void setup(char inputBuffer[], char *args[],int *background)
             ct;     /* index of where to place the next parameter into args[] */
 
     ct = 0;
-
     /* read what the user enters on the command line */
     length = read(STDIN_FILENO,inputBuffer,MAX_LINE);
 
@@ -40,19 +49,28 @@ void setup(char inputBuffer[], char *args[],int *background)
         perror("error reading the command");
         exit(-1);           /* terminate with error code of -1 */
     }
-
-    printf(">>%s<<",inputBuffer);
+    //printf(">>%s<<",inputBuffer);
+    int isQuote=0,eq_sign_b=0;
+    char eq_sign[2]="=";
     for (i=0;i<length;i++){ /* examine every character in the inputBuffer */
-
         switch (inputBuffer[i]){
+
+            case '=':
+                eq_sign_b=1;
             case ' ':
             case '\t' :               /* argument separators */
+                if(isQuote==1) break;
                 if(start != -1){
                     args[ct] = &inputBuffer[start];    /* set up pointer */
                     ct++;
                 }
                 inputBuffer[i] = '\0'; /* add a null char; make a C string */
                 start = -1;
+                if(eq_sign_b){
+                    eq_sign_b=0;
+                    args[ct]=&eq_sign;
+                    ct++;
+                }
                 break;
 
             case '\n':                 /* should be the final char examined */
@@ -70,15 +88,32 @@ void setup(char inputBuffer[], char *args[],int *background)
                 if (inputBuffer[i] == '&'){
                     *background  = 1;
                     inputBuffer[i-1] = '\0';
+                }else if(inputBuffer[i]==34){
+                    isQuote=(isQuote+1)%2;
                 }
         } /* end of switch */
     }    /* end of for */
     args[ct] = NULL; /* just in case the input line was > 80 */
-
-    for (i = 0; i <= ct; i++)
-        printf("args %d = %s\n",i,args[i]);
+    //printf("%s",inputBuffer);
+    for (i = 0; i < ct; i++)
+        printf("args %d = %s ve %c\n",i,args[i],args[i][strlen(args[i])-1]);
+    //checkArgs(args,ct);
 } /* end of setup routine */
 
+int checkArgs(char *args[],int ct){
+    int needed=2;
+    ct-=1;
+    if(!strcmp(cmm_bookmark,args[0])){
+        needed=1;
+        if(!strcmp(bm_list,args[1])||(args[1][0]==34&&args[1][strlen(args[1])-1]==34))
+            needed=0;
+        else if(!strcmp(bm_dlt,args[1])||!strcmp(bm_idx,args[1]))
+            needed=1;
+        if(!needed){
+
+        }
+    }
+}
 int main(void)
 {
     char inputBuffer[MAX_LINE]; /*buffer to hold command entered */
@@ -86,10 +121,9 @@ int main(void)
     char *args[MAX_LINE/2 + 1]; /*command line arguments */
     while (1){
         background = 0;
-        printf("myshell: ");
+        //printf("myshell: ");
         /*setup() calls exit() when Control-D is entered */
         setup(inputBuffer, args, &background);
-
         /** the steps are:
         (1) fork a child process using fork()
         (2) the child process will invoke execv()
