@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 
 #define MAX_LINE 128 /* 80 chars per line, per command, should be enough. */
 #define NUM_OF_CMM 5 //defines total numbers of commands
@@ -102,7 +103,7 @@ int setup(char inputBuffer[], char *args[],int *background)
             printf("----\n");
             return -1;
         }
-        printf("args %d = %s ve %c ve %d bg=%d\n",i,args[i],args[i][strlen(args[i])-1],ret,*background);
+        printf("args %d = %s ve %c ve %d bg=%d\n",i,args[5+i],args[i][strlen(args[i])-1],ret,*background);
     }
 
 } /* end of setup routine */
@@ -112,7 +113,11 @@ int checkArgs(char *args[],int ct,int background){
     int okay=0;
     if(ct>=0){
         if(!strcmp(cmm_bookmark,args[0])){
-            return check_for_bm(args,ct,background);
+            if(check_for_bm(args,ct,background)==1){
+                cp_arr(args,cmm,5,0,NUM_OF_CMM);
+                e_process(args,background);
+
+            }
         }else if(!strcmp(cmm_codesearch,args[0])){
             return check_for_cs(args,ct,background);
         }else if(!strcmp(cmm_print,args[0])){
@@ -138,6 +143,11 @@ int check_for_print(char*args[],int ct,int background){
         }
     }else okay=1;
     return okay;
+}
+void e_process(char *args[],int background){
+    if(fork()==0)
+        execv("/home/berkay/Documents/OPSYS/test/asd.out",args);
+    if(!background) wait(NULL);
 }
 int check_for_set(char*args[],int ct,int background){
     int okay=0;
@@ -209,6 +219,12 @@ int check_if_bg(int background,int idx,int ct){
         return 1;
     }
     return 2;
+}
+void cp_arr(char *arr1[],char *arr2[],int arr1_idx,int arr2_idx,int arr2_lim){
+    int x,y;
+    for(x=arr1_idx,y=arr2_idx;y<arr2_lim;x++,y++){
+        arr1[x]=arr2[y];
+    }
 }
 void initialize(){
     cmm[0]=&cmm_bookmark;
