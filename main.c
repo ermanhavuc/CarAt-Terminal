@@ -13,10 +13,12 @@ in the next command line; separate it into distinct arguments (using blanks as
 delimiters), and set the args array entries to point to the beginning of what
 will become null-terminated, C-style strings. */
 char cmm_bookmark[80]="bookmark";
+char bookmark_path[80]="/home/berkay/Documents/OPSYS/test/bookmark.out";
 char bm_list[3]="-l";
 char bm_idx[3]="-i";
 char bm_dlt[3]="-d";
 char cmm_codesearch[80]="codesearch";
+char codesearch_path[80]="/home/berkay/Documents/OPSYS/test/asd.out";
 char cs_rec[3]="-r";
 char cmm_print[80]="print";
 char cmm_set[80]="set";
@@ -70,7 +72,7 @@ int setup(char inputBuffer[], char *args[],int *background)
                 start = -1;
                 if(eq_sign_b){
                     eq_sign_b=0;
-                    args[ct]=&eq_sign;
+                    args[ct]=&eq_sign[0];
                     ct++;
                 }
                 break;
@@ -97,14 +99,15 @@ int setup(char inputBuffer[], char *args[],int *background)
     }    /* end of for */
     args[ct] = NULL; /* just in case the input line was > 80 */
     //printf("%s",inputBuffer);
-    for (i = 0; i < ct; i++) {
-        int ret = checkArgs(args,ct,*background);
-        if(ret==-1) {
-            printf("----\n");
-            return -1;
-        }
-        printf("args %d = %s ve %c ve %d bg=%d\n",i,args[5+i],args[i][strlen(args[i])-1],ret,*background);
-    }
+    //for (i = 0; i < ct; i++) {
+      //  int ret = checkArgs(args,ct,*background);
+        //if(ret==-1) {
+          //  printf("----\n");
+            //return -1;
+        //}
+        //printf("args %d = %s ve %c ve %d bg=%d\n",i,args[i],args[i][strlen(args[i])-1],ret,*background);
+    //}
+    checkArgs(args,ct,*background);
 
 } /* end of setup routine */
 
@@ -114,12 +117,13 @@ int checkArgs(char *args[],int ct,int background){
     if(ct>=0){
         if(!strcmp(cmm_bookmark,args[0])){
             if(check_for_bm(args,ct,background)==1){
-                cp_arr(args,cmm,5,0,NUM_OF_CMM);
-                e_process(args,background);
+                e_process(bookmark_path,args,background);
 
             }
         }else if(!strcmp(cmm_codesearch,args[0])){
-            return check_for_cs(args,ct,background);
+            if(check_for_cs(args,ct,background)==1){
+                e_process(codesearch_path,args,background);
+            }
         }else if(!strcmp(cmm_print,args[0])){
             return check_for_print(args,ct,background);
         }else if(!strcmp(cmm_set,args[0])){
@@ -129,6 +133,12 @@ int checkArgs(char *args[],int ct,int background){
         }else okay=5; //wrong arguments
     }else okay=4;//arguments not enough
     return okay;
+}
+int check_if_bg(int background,int idx,int ct){
+    if(background==1&&(idx+1)==ct){
+        return 1;
+    }
+    return 2;
 }
 int check_for_print(char*args[],int ct,int background){
     int okay=5;
@@ -144,10 +154,20 @@ int check_for_print(char*args[],int ct,int background){
     }else okay=1;
     return okay;
 }
-void e_process(char *args[],int background){
-    if(fork()==0)
-        execv("/home/berkay/Documents/OPSYS/test/asd.out",args);
+void e_process(char path[],char *args[],int background){
+    int childpid;
+    if((childpid=fork())==0)
+        execv(path,args);
     if(!background) wait(NULL);
+}
+int check_if_int(char str[]){
+    int i,lnt=strlen(str);
+    for(i=0;i<lnt;i++){
+        if(!(str[i]>=48&&str[i]<=57)){
+            return 0;
+        }
+    }
+    return 1;
 }
 int check_for_set(char*args[],int ct,int background){
     int okay=0;
@@ -169,22 +189,27 @@ int check_for_set(char*args[],int ct,int background){
     return okay;
 }
 int check_for_cs(char*args[],int ct,int background){
+
     int okay=0;
     if(ct>=1){
            if(!strcmp(args[1],cs_rec)){
            if(ct>=2){
-               if(args[2][0]==34 && args[2][strlen(args[2]-1)]==34){
+               if(args[2][0]==34 && args[2][strlen(args[2])-1]==34){
+                   //printf("!!!!!!\n");
                    if(ct==2) okay=1;
                    else okay=check_if_bg(background,2,ct);
                }else okay=6; //not a valid string
            }else okay=4; //arguments not enough
-       }else if(args[1][0]==34 && args[2][strlen(args[1]-1)]==34){
+       }else if(args[1][0]==34 && args[1][strlen(args[1])-1]==34){
+
            if(ct==1) okay=1;
            else okay=check_if_bg(background,1,ct);
        }else okay=5; //wrong arguments
     }else okay=4; //arguments not enough
     return okay;
 }
+
+
 int check_for_bm(char*args[],int ct,int background){
     int okay=0;
 
@@ -205,21 +230,7 @@ int check_for_bm(char*args[],int ct,int background){
 
     return okay;
 }
-int check_if_int(char str[]){
-    int i,lnt=strlen(str);
-    for(i=0;i<lnt;i++){
-        if(!(str[i]>=48&&str[i]<=57)){
-            return 0;
-        }
-    }
-    return 1;
-}
-int check_if_bg(int background,int idx,int ct){
-    if(background==1&&(idx+1)==ct){
-        return 1;
-    }
-    return 2;
-}
+
 void cp_arr(char *arr1[],char *arr2[],int arr1_idx,int arr2_idx,int arr2_lim){
     int x,y;
     for(x=arr1_idx,y=arr2_idx;y<arr2_lim;x++,y++){
@@ -227,11 +238,11 @@ void cp_arr(char *arr1[],char *arr2[],int arr1_idx,int arr2_idx,int arr2_lim){
     }
 }
 void initialize(){
-    cmm[0]=&cmm_bookmark;
-    cmm[1]=&cmm_codesearch;
-    cmm[2]=&cmm_print;
-    cmm[3]=&cmm_set;
-    cmm[4]=&cmm_exit;
+    cmm[0]=&cmm_bookmark[0];
+    cmm[1]=&cmm_codesearch[0];
+    cmm[2]=&cmm_print[0];
+    cmm[3]=&cmm_set[0];
+    cmm[4]=&cmm_exit[0];
 }
 int main(void)
 {
@@ -245,7 +256,7 @@ int main(void)
         //printf("myshell: ");
         /*setup() calls exit() when Control-D is entered */
         end=setup(inputBuffer, args, &background);
-        printf("***\n");
+        printf("---\n");
         if(end==-1) break;
         /** the steps are:
         (1) fork a child process using fork()
