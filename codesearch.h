@@ -7,7 +7,7 @@
 
 #endif //PROJECT2_CODESEARCH_H
 
-#define PATH_NAME "/home/berkay/Documents/OPSYS/test"
+#define PATH_NAME "/home/erman/Documents/test"
 //#define PATH_NAME "."
 #define LIM1 4
 #define LIM2 12

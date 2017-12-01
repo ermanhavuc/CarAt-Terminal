@@ -14,10 +14,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "myshellVariables.h"
 
 int print(int argc, char **argv, char **envp)
 {
+
+
     if (argc == 2 ) {
         if (getenv(argv[1]) == NULL) {
             printf("There is no environment variable named as %s.", argv[1]);

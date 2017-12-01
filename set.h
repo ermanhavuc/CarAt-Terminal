@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "myshellVariables.h"
 
 void removeSpaces(char* source);
 
@@ -23,6 +22,7 @@ int set(int argc, char **argv)
     char *mainArg = "";
     int i = 1;
 
+    printf("asd");
     while(argv[i] != NULL){
         char * new_str ;
         if((new_str = malloc(strlen(mainArg)+strlen(argv[i])+1)) != NULL){

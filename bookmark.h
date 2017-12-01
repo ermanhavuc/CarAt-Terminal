@@ -15,14 +15,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "myshellVariables.h"
 
 void add(char line[]) ;
 void delete(int index) ;
 void list();
 void run(int index);
 
-int bookmark(char *argv[]) {
+int bookmark(char *args[]) {
+
 
 }
 

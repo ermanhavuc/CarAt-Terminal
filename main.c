@@ -4,11 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include "myshellVariables.h"
 #include "bookmark.h"
 #include "codesearch.h"
 #include "set.h"
 #include "print.h"
 
+char **env;
 
 /* The setup function below will not return any value, but it will just: read
 in the next command line; separate it into distinct arguments (using blanks as
@@ -109,16 +111,20 @@ int checkArgs(char *args[],int ct,int background){
     if(ct>=0){
         if(!strcmp(cmm_bookmark,args[0])){
             if(check_for_bm(args,ct,background)==1){
-                e_process(bookmark_path,args,background);
+                e_command(cmm_bookmark,args,background);
             }
         }else if(!strcmp(cmm_codesearch,args[0])){
             if(check_for_cs(args,ct,background)==1){
-                e_process(codesearch_path,args,background);
+                e_command(cmm_codesearch,args,background);
             }
         }else if(!strcmp(cmm_print,args[0])){
-            return check_for_print(args,ct,background);
+            if(check_for_print(args,ct,background)==1){
+                e_command(cmm_print,args,background);
+            }
         }else if(!strcmp(cmm_set,args[0])){
-            return check_for_set(args,ct,background);
+            if(check_for_set(args,ct,background)==1){
+                e_command(cmm_set,args,background);
+            }
         }else if(!strcmp(cmm_exit,args[0])&&ct==0){
             return -1;
         }else okay=5; //wrong arguments
@@ -132,17 +138,20 @@ int check_if_bg(int background,int idx,int ct){
     return 2;
 }
 int check_for_print(char*args[],int ct,int background){
+
     int okay=5;
-    if(ct>=1){
+    if(ct==1) okay=1;
+    else if(ct>1){
+        if(ct==2){
+            okay=1;
+        }else okay=check_if_bg(background,2,ct);
+    }
+    /*if(ct>=1){
         okay=check_if_bg(background,0,ct);
-        int i;
-        for(i=0;i<NUM_OF_CMM;i++){
-            if(!strcmp(args[1],cmm[i])){
-                if(ct==1) okay=1;
-                else okay=check_if_bg(background,1,ct);
-            }else if(okay!=1) okay=5;
-        }
-    }else okay=1;
+        if(ct==2) okay=1;
+        else okay=check_if_bg(background,1,ct);
+    }*/
+
     return okay;
 }
 void e_process(char path[],char *args[],int background){
@@ -152,6 +161,51 @@ void e_process(char path[],char *args[],int background){
         execv(path,args);
     if(!background) wait(NULL);
     //printf("%s\n",args[0]);
+}
+void sel_N_run(int c_name,char *args[]){
+
+    int i=0,ct=0;
+
+    while(args[i]!=NULL){
+
+        ct++;
+        i++;
+    }
+    //printf("%d %s",ct, args[0]);
+    switch(c_name){
+        case 0:
+            printf("qwerqwer %d %s ,ct,args[0]\n");
+            bookmark(args);
+            break;
+        case 1:
+
+            codesearch(ct,args);
+            break;
+        case 2:
+            print(ct,args,env);
+            break;
+        case 3:
+            set(ct,args);
+            break;
+        case 4:
+            break;
+    }
+}
+void e_command(char name[],char *args[],int background){
+    int childpid,c_name;
+    //args[0]=path;
+    if(!strcmp(name,cmm_bookmark)) c_name=0;
+    if(!strcmp(name,cmm_codesearch)) c_name=1;
+    if(!strcmp(name,cmm_print)) c_name=2;
+    if(!strcmp(name,cmm_set)) c_name=3;
+    int *er;
+    if((childpid=fork())==0){
+        sel_N_run(c_name,args);
+        exit(0);
+    }
+
+    if(!background) wait(er);
+    printf("%d\n",errno);
 }
 int check_if_int(char str[]){
     int i,lnt=strlen(str);
@@ -166,19 +220,14 @@ int check_for_set(char*args[],int ct,int background){
     int okay=0;
     if(ct>=3){
         int i;
-
+        //printf("%d\n",okay);
         if(!strcmp(args[2],eq_sign)){
             if(ct==3) okay=1;
             else okay=check_if_bg(background,3,ct);
-        }else okay=5; //wrong arguments
 
-        for(i=0;i<NUM_OF_CMM;i++){
-            if(!strcmp(args[1],cmm[i])){
-                okay=0;
-                break;
-            }else okay=5;//wrong arguments
-        }
+        }else okay=5; //wrong arguments
     }else okay=4; //arguments not enough
+
     return okay;
 }
 int check_for_cs(char*args[],int ct,int background){
@@ -237,9 +286,11 @@ void initialize(){
     cmm[3]=&cmm_set[0];
     cmm[4]=&cmm_exit[0];
 }
-int main(void)
+int main(int x,char *y[],char **envp)
 {
+    env=envp;
     initialize();
+
     int end =0;
     char inputBuffer[MAX_LINE]; /*buffer to hold command entered */
     int background; /* equals 1 if a command is followed by '&' */

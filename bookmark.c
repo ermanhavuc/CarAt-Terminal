@@ -14,11 +14,7 @@ void run(int index);
 
 int main(int argc, char *argv[]) {
 
-    //addToBookmark("asd");
-    //deleteFromBookmark(3);
-    list();
-    delete(8);
-    list();
+
 }
 
 void add(char line[]) {
