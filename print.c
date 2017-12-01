@@ -4,18 +4,15 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 int main(int argc, char **argv, char **envp)
 {
-    if (argc == 2) {
-        for (char **env = envp; *env != 0; env++) {
-            char *thisEnv = *env;
-            if (strstr(thisEnv,argv[1]) != NULL) {
-
-                thisEnv += strlen(argv[1])+1;
-                printf("%s",thisEnv);
-                break;
-            }
+    if (argc == 2 ) {
+        if (getenv(argv[1]) == NULL) {
+            printf("There is no environment variable named as %s.", argv[1]);
+        } else {
+            printf("%s",getenv(argv[1]));
         }
 
     } else if (argc > 2) {
