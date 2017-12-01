@@ -18,7 +18,7 @@ char bm_list[3]="-l";
 char bm_idx[3]="-i";
 char bm_dlt[3]="-d";
 char cmm_codesearch[80]="codesearch";
-char codesearch_path[80]="/home/berkay/Documents/OPSYS/test/asd.out";
+char codesearch_path[80]="/home/berkay/Documents/OPSYS/test/codesearch.out";
 char cs_rec[3]="-r";
 char cmm_print[80]="print";
 char cmm_set[80]="set";
@@ -118,7 +118,6 @@ int checkArgs(char *args[],int ct,int background){
         if(!strcmp(cmm_bookmark,args[0])){
             if(check_for_bm(args,ct,background)==1){
                 e_process(bookmark_path,args,background);
-
             }
         }else if(!strcmp(cmm_codesearch,args[0])){
             if(check_for_cs(args,ct,background)==1){
@@ -156,9 +155,11 @@ int check_for_print(char*args[],int ct,int background){
 }
 void e_process(char path[],char *args[],int background){
     int childpid;
+    //args[0]=path;
     if((childpid=fork())==0)
         execv(path,args);
     if(!background) wait(NULL);
+    //printf("%s\n",args[0]);
 }
 int check_if_int(char str[]){
     int i,lnt=strlen(str);
