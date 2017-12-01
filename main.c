@@ -4,27 +4,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include "bookmark.h"
+#include "codesearch.h"
+#include "set.h"
+#include "print.h"
 
-#define MAX_LINE 128 /* 80 chars per line, per command, should be enough. */
-#define NUM_OF_CMM 5 //defines total numbers of commands
 
 /* The setup function below will not return any value, but it will just: read
 in the next command line; separate it into distinct arguments (using blanks as
 delimiters), and set the args array entries to point to the beginning of what
 will become null-terminated, C-style strings. */
-char cmm_bookmark[80]="bookmark";
-char bookmark_path[80]="/home/berkay/Documents/OPSYS/test/bookmark.out";
-char bm_list[3]="-l";
-char bm_idx[3]="-i";
-char bm_dlt[3]="-d";
-char cmm_codesearch[80]="codesearch";
-char codesearch_path[80]="/home/berkay/Documents/OPSYS/test/codesearch.out";
-char cs_rec[3]="-r";
-char cmm_print[80]="print";
-char cmm_set[80]="set";
-char cmm_exit[80]="exit";
-char *cmm[NUM_OF_CMM];
-char eq_sign[2]="=";
 
 int setup(char inputBuffer[], char *args[],int *background)
 {
@@ -63,7 +52,10 @@ int setup(char inputBuffer[], char *args[],int *background)
                 eq_sign_b=1;
             case ' ':
             case '\t' :               /* argument separators */
-                if(isQuote==1) break;
+                if(isQuote==1) {
+                    eq_sign_b=0;
+                    break;
+                }
                 if(start != -1){
                     args[ct] = &inputBuffer[start];    /* set up pointer */
                     ct++;
