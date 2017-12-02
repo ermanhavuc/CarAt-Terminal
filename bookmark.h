@@ -84,18 +84,15 @@ void list() {
     FILE *bookmarks = fopen("../bookmarks.txt", "r");
     int count = 0;
     char line[128]; // or other suitable maximum line size
-    if ( bookmarks != NULL )
-    {
-        while (fgets(line, sizeof line, bookmarks) != NULL) // read a line
-        {
+    if ( bookmarks != NULL ) {
+        while (fgets(line, sizeof line, bookmarks) != NULL) {
             strtok(line, "\n");
             printf("%d \"%s\"\n",count,line);
             count++;
         }
         fclose(bookmarks);
     }
-    else
-    {
+    else {
         printf("Bookmarks file does not exist!");
     }
 
