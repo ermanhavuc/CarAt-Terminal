@@ -70,7 +70,7 @@ void scan_f_name(char *args[]){
         if(args[i][len-1]=='>'){//outputs
             int add=0;
             strcpy(temp,args[i]);
-            if(args[i][0]>=48&&args[i][0]<=57){
+            if(args[i][0]>=48&&args[i][0]<=57&&temp[0]=='-'){
                 temp[0]=args[i][0];
                 temp[1]=NULL;
                 add=atoi(temp);

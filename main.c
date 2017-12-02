@@ -52,7 +52,7 @@ int check_io(char *args[],int cur,int background){
             }
         }
         strcpy(temp,io_pt[j]);
-        if(args[i][0]>=48&&args[i][0]<=57){
+        if(args[i][0]>=48&&args[i][0]<=57&&temp[0]=='-'){
             temp[0]=args[i][0];
         }
         //printf("-----%s\n",temp);
@@ -377,9 +377,10 @@ int scan_io(char *args[],int background){
         while(j<ioptlen){
 
             strcpy(temp,io_pt[j]);
-            if(args[i][0]>=48&&args[i][0]<=57){
-                temp[0]=args[j][0];
+            if(args[i][0]>=48&&args[i][0]<=57&&temp[0]=='-'){
+                temp[0]=args[i][0];
             }
+            printf("!!!!!!!!!!!!!!!!!!!%s %s\n",args[i],temp);
             if(!strcmp(args[i],temp)){
                 io_place = i;
 
@@ -406,9 +407,9 @@ int check_Args(char *args[],int ct,int background){
 
                 if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
-
+                printf("!!!!!!!!!!!!!!!!!!! %d\n");
                 if(io_place!=-1) {
-                    printf("!!!!!!!!!!!!!!!!!!! %d\n",ct);
+
                     args[io_place]=NULL;
                 }
 
