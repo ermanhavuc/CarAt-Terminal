@@ -19,6 +19,7 @@
 #include <dirent.h>
 #include <_G_config.h>
 
+
 char path[80]=PATH_NAME;
 char word_arg[80]="";
 int scan_for_pos_vals(char src[]){
@@ -33,6 +34,7 @@ int scan_for_pos_vals(char src[]){
 
 
 }
+
 void findwords(char file_path[128],char word[80]){
     char *line,*ret;
     ssize_t len=0;
@@ -112,6 +114,17 @@ int ipt_args(char *args[]){
     return ret_val;
 }
 int codesearch(int argc,char *args[]){
+    int i=0;
+    while(args[i]!=NULL){
+        printf("%s\n",args[i]);
+        i++;
+    }
+    exit(0);
+    scan_f_name(args);
+    printf("DONE\n");
+    exit(0);
+
+
     struct dirent *de;
     int rec=0;
     DIR *dr;
