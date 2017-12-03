@@ -4,7 +4,6 @@
 
 #include <bits/types/FILE.h>
 #include <stdio.h>
-#include <zconf.h>
 #include <fcntl.h>
 
 
@@ -124,7 +123,6 @@ void scan_f_name(char *args[]){
 }
 
 void close_redirections(){
-
 
     int i=0;
     while(i<POS_FILE_CNT){
