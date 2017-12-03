@@ -20,7 +20,10 @@ void removeDQuotes(char *source);
 
 int bookmark(char **args) {
 
-    if(strcmp(args[1], "-l") == 0){
+    if(args[1] == '\0'){
+        printf("asd");
+    }
+    else if(strcmp(args[1], "-l") == 0){
         list();
     }
     else if(strcmp(args[1], "-i") == 0){
@@ -46,7 +49,7 @@ void add(char line[]) {
     fclose(bookmarks);
 }
 
-void delete(int linetodelete){
+void delete(int index){
 
     FILE *file = fopen("../bookmarks.txt", "r");
     FILE *filetemp = fopen("__tempfile__", "w");
@@ -55,7 +58,7 @@ void delete(int linetodelete){
     int countline = 0;
 
     while(fgets(line, 255, file) != NULL){
-        if(countline != linetodelete){
+        if(countline != index){
             fputs(line, filetemp);
         }
 
@@ -111,8 +114,6 @@ void run(int index) {
     }
 
     /*
-     * run
-     * run
      * run
      */
 }

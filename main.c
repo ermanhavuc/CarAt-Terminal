@@ -9,6 +9,8 @@
 #include "codesearch.h"
 #include "set.h"
 #include "print.h"
+#include "execCommand.h"
+#include "history.h"
 #define ioptlen 5
 
 char **env;
@@ -108,7 +110,9 @@ int setup(char inputBuffer[], char *args[],int *background) {
 
     ct = 0;
     /* read what the user enters on the command line */
+    history();
     length = read(STDIN_FILENO,inputBuffer,MAX_LINE);
+    addToHistory(inputBuffer);
 
     /* 0 is the system predefined file descriptor for stdin (standard input),
        which is the user's screen in this case. inputBuffer by itself is the
@@ -183,9 +187,8 @@ int setup(char inputBuffer[], char *args[],int *background) {
         //}
         //printf("args %d = %s ve %c ve %d bg=%d\n",i,args[i],args[i][strlen(args[i])-1],ret,*background);
     //}
-    int adf=check_Args(args,ct,*background);
-    printf("%d\n",adf);
-    //printf("%d\n",adf);
+    check_Args(args,ct,*background);
+        //printf("%d\n",adf);
 } /* end of setup routine */
 
 void e_process(char path[],char *args[],int background){
@@ -199,12 +202,12 @@ void sel_N_run(int c_name,char *args[]){
 
     int i=0,ct=0;
 
-    while(args[i]!=NULL){
+    while(args[i]!='\0'){
 
         ct++;
         i++;
     }
-    printf("%d %s\n",ct, args[0]);
+
     switch(c_name){
         case 0:
             //printf("qwerqwer %d %s ,ct,args[0]\n");
@@ -267,7 +270,6 @@ int scan_io(char *args[],int background){
         j=0;
         i++;
     }
-    printf("OKAY!!!\n");
     if(background==1&&strcmp(args[i-1],"&")) return 5;
     return 1;
 }
@@ -281,7 +283,6 @@ int check_Args(char *args[],int ct,int background){
 
             if((okay=scan_io(args,background))==1){
 
-                if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
                 //printf("!!!!!!!!!!!!!!!!!!! %d\n");
                 if(io_place!=-1) {
@@ -291,11 +292,10 @@ int check_Args(char *args[],int ct,int background){
 
                 e_command(cmm_bookmark,args,background);
                 close_redirections();
-                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_codesearch,args[0])){
             if((okay=scan_io(args,background))==1){
-                if(args[ct]!=NULL) printf("%s\n",args[ct]);
+
                 if(background==1) args[ct]=NULL;
                 if(io_place!=-1) {
                     scan_f_name(args);
@@ -303,11 +303,10 @@ int check_Args(char *args[],int ct,int background){
                 }
                 e_command(cmm_codesearch,args,background);
                 close_redirections();
-                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_print,args[0])){
             if((okay=scan_io(args,background))==1){
-                if(args[ct]!=NULL) printf("%s\n",args[ct]);
+
                 if(background==1) args[ct]=NULL;
                 if(io_place!=-1) {
                     scan_f_name(args);
@@ -315,11 +314,10 @@ int check_Args(char *args[],int ct,int background){
                 }
                 e_command(cmm_print,args,background);
                 close_redirections();
-                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_set,args[0])){
             if((okay=scan_io(args,background))==1){
-                if(args[ct]!=NULL) printf("%s\n",args[ct]);
+
                 if(background==1) args[ct]=NULL;
                 if(io_place!=-1) {
                     scan_f_name(args);
@@ -328,11 +326,18 @@ int check_Args(char *args[],int ct,int background){
                 //printf("dasdasdasdasdasdas\n");
                 e_command(cmm_set,args,background);
                 close_redirections();
-                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_exit,args[0])&&ct==0){
             return -1;
-        }else okay=5; //wrong arguments
+        }else if(scan_io(args,background)==1){
+            if(background==1) args[ct]=NULL;
+            if(io_place!=-1) {
+                scan_f_name(args);
+                args[io_place]=NULL;
+            }
+            execCommand(args,background);
+            close_redirections();
+        }else perror("Wrong Arguments!\n"); //wrong arguments
         //printf("dasdasdasdasdasdas %d\n",okay);
     }else okay=4;//arguments not enough
     return okay;
@@ -364,7 +369,8 @@ int main(int x,char *y[],char **envp) {
         //printf("myshell: ");
         /*setup() calls exit() when Control-D is entered */
         end=setup(inputBuffer, args, &background);
-        printf("---\n");
+
+        printf("\n---\n");
         if(end==-1) break;
         /** the steps are:
         (1) fork a child process using fork()
