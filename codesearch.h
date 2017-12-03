@@ -98,54 +98,29 @@ void findfiles(DIR *dr,struct dirent *de,char path[],char word[],int rec){
     }
     //printf("find files close\n");
 }
-int ipt_args(char *args[]){
-    int i=0,ret_val=0;
-    while(args[i]!=NULL){
-        if(!strcmp(args[i],"-r")){
-            ret_val=1;
-        }
-        size_t len=strlen(args[i]);
-        if(args[i][0]==34&&args[i][len-1]==34){
-            strcpy(word_arg,&args[i][1]);
-            strcpy(&word_arg[len-2],&args[i][len]);
-            //printf("word is%s\n",word_arg);
-        }
 
-        i++;
-    }
-    return ret_val;
-}
+
 int test_args(int argc,char *args[]){
     if(argc<=3){
-        if(i_red_flag==1&&argc<=2){
-            if(args[1]==NULL){
-                return 0;
-            }else if(!strcmp(args[1],"-r")){
-                return 1;
-            }else perror("wrong arg\n");
-        }else if(i_red_flag==0&&argc>=2){
-
-            if(args[2]==NULL){
+        if(argc==2){
                 size_t len=strlen(args[1]);
                 if(args[1][0]==34&&args[1][len-1]==34){
-                    strcpy(word_arg,args[1]);
+                    strcpy(word_arg,&args[1][1]);
+                    strcpy(&word_arg[len-2],&args[1][len]);
                     return 0;
                 }else perror("*wrong arguments");
-            }else{
-                size_t len=strlen(args[2]);
-                if(!strcmp(args[1],"-r")&&args[2][0]==34&&args[2][len-1]==34){
-                    strcpy(word_arg,args[2]);
-                    printf("*********%s\n",word_arg);
-                    return 1;
-                }else{
-                    perror("-wrong arguments\n");
-                }
+        }else if(argc==3){
+            size_t len=strlen(args[2]);
+            if(!strcmp(args[1],"-r")&&args[2][0]==34&&args[2][len-1]==34){
+                strcpy(word_arg,&args[2][1]);
+                strcpy(&word_arg[len-2],&args[2][len]);
+                printf("*********%s\n",word_arg);
+                return 1;
             }
-        }else perror("argument count not valid");
-    }else perror("too many\n");
+        }else perror("arguments not enough");
+    }else perror("too many arguments\n");
 
 }
-
 int codesearch(int argc,char *args[]){
     /*
     return 1;*/
@@ -162,7 +137,7 @@ int codesearch(int argc,char *args[]){
         //path_arg=args[0];
         //printf("argc=%d arg1=%s\n",argc,arg[0]);
         rec=test_args(argc,args);
-    printf("----%d",rec);
+    //printf("----%d",rec);
     }else{
         perror("Arguments not enough\n");
     }
@@ -170,7 +145,7 @@ int codesearch(int argc,char *args[]){
     strcpy(ar,"");
     int i=0;
     while(args[i]!=NULL){
-        printf("args -- %s %d\n",args[i],rec);
+        //printf("args -- %s %d\n",args[i],argc);
         i++;
     }
 

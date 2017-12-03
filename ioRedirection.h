@@ -7,6 +7,7 @@
 #include <zconf.h>
 #include <fcntl.h>
 
+
 #ifndef PROJECT2_IOREDIRECTION_H
 #define PROJECT2_IOREDIRECTION_H
 #endif //PROJECT2_IOREDIRECTION_H
@@ -38,7 +39,7 @@ void rf_n_update_fd(char file_path[],int i0o1){
             break;
         case 23:
         case 2:
-            printf("SEND1-\n");
+            //printf("SEND1-\n");
             io_file[1]= open(file_path,MODE_FLAGS_OW, PERMISSION);//output overwrite
             if (dup2(io_file[1], STDOUT_FILENO) == -1) {
                 perror("Failed to redirect standard output\n");
@@ -74,7 +75,7 @@ void scan_f_name(char *args[]){
         k++;
     }*/
     while(args[i]!=NULL){
-        printf(">>>>>>>>>>>>-- %s\n",args[i]);
+        //printf(">>>>>>>>>>>>-- %s\n",args[i]);
 
         send = 0;
         ssize_t len=strlen(args[i]);
@@ -117,7 +118,7 @@ void scan_f_name(char *args[]){
             send=1;
             rf_n_update_fd(args[i+1],send);
         }
-        printf("SEND2- %d %s\n",send,args[i]);
+        //printf("SEND2- %d %s\n",send,args[i]);
         i++;
     }
 }

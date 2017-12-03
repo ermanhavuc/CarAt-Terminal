@@ -18,12 +18,31 @@ void list();
 void run(int index);
 void removeDQuotes(char *source);
 
-int bookmark(char **args) {
+void run(int index){
+    ssize_t s=0,len=0;
+    char *line=NULL,send[80]="",*args[80];
+    FILE *bookmarks=fopen("../bookmarks.txt","r");
+    int i=0,bgp=0;
+    while((len=getline(&line,&s,bookmarks))!=-1){
+        if(i==index) {
+            bm_exe=1;
+            bm_len=len;
+            strcpy(send,line);
+            printf("---------%s\n",send);
+            setup(send,args,&bgp);
+            bm_exe=0;
+        }
+        i++;
+    }
 
+}
+
+int bookmark(char **args) {
+    if(args[1]==NULL) return;
     if(strcmp(args[1], "-l") == 0){
         list();
     }
-    else if(strcmp(args[1], "-i") == 0){
+    else if(strcmp(args[1], "-i") == 0&&args[2]!=NULL){
         run(strtol(args[2], NULL, 10));
     }
     else if(strcmp(args[1], "-d") == 0){
@@ -35,6 +54,7 @@ int bookmark(char **args) {
     }
 
 }
+
 
 void add(char line[]) {
 
@@ -86,35 +106,6 @@ void list() {
         printf("Bookmarks file does not exist!");
     }
 
-}
-
-void run(int index) {
-
-    FILE *bookmarks = fopen("../bookmarks.txt", "r");
-    int count = 0;
-    char line[128]; // or other suitable maximum line size
-
-    if ( bookmarks != NULL ){
-        while (fgets(line, sizeof line, bookmarks) != NULL){
-            if (count == index){
-                strtok(line, "\n");
-                break;
-            }
-            else {
-                count++;
-            }
-        }
-        fclose(bookmarks);
-    }
-    else {
-        printf("Bookmarks file does not exist!");
-    }
-
-    /*
-     * run
-     * run
-     * run
-     */
 }
 
 void removeDQuotes(char *source) {

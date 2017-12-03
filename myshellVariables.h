@@ -10,7 +10,7 @@
 #define MAX_LINE 128 /* 80 chars per line, per command, should be enough. */
 #define NUM_OF_CMM 5 //defines total numbers of commands
 
-#include "ioRedirection.h"
+//#include "ioRedirection.h"
 
 char cmm_bookmark[80]="bookmark";
 char bookmark_path[80]="/home/berkay/Documents/OPSYS/test/bookmark.out";
@@ -25,3 +25,7 @@ char cmm_set[80]="set";
 char cmm_exit[80]="exit";
 char *cmm[NUM_OF_CMM];
 char eq_sign[2]="=";
+char **env;
+int io_place=-1,bm_exe=0;
+ssize_t bm_len=0;
+
