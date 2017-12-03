@@ -16,7 +16,7 @@
 #define PERMISSION (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define POS_FILE_CNT 5
 
-int io_file[POS_FILE_CNT],s_stdout,s_stderr,s_stdin;
+int io_file[POS_FILE_CNT],s_stdout,s_stderr,s_stdin,i_red_flag=0;
 void rf_n_update_fd(char file_path[],int i0o1){
     s_stdout=dup(1);
     s_stderr=dup(2);
@@ -26,7 +26,9 @@ void rf_n_update_fd(char file_path[],int i0o1){
     switch (i0o1){
 
         case 1:
+            i_red_flag=1;
             io_file[0]= open(file_path,MODE_FLAGS_RW_AP, PERMISSION);//input
+
             if(io_file[0]==-1){
                 perror("failed to open file\n");
             }
@@ -79,12 +81,21 @@ void scan_f_name(char *args[]){
         if(args[i][len-1]=='>'){//outputs
 
             int add=0;
-            strcpy(temp,args[i]);
-            if(args[i][0]>=48&&args[i][0]<=57&&temp[0]=='-'){
-                temp[0]=args[i][0];
-                temp[1]=NULL;
-                add=atoi(temp);
-                add=(add*10)+10;
+
+            if(args[i][0]>=48&&args[i][0]<=57){
+                char app[3]="->",tru[4]="->>",*arr[2];
+                arr[0]=app;
+                arr[1]=tru;
+                int k;
+                for(k=0;k<2;k++){
+                    strcpy(temp,arr[k]);
+                    temp[0]=args[i][0];
+                    if(!strcmp(args[i],temp)){
+                        temp[1]=NULL;
+                        add=atoi(temp);
+                        add=(add*10)+10;
+                    }
+                }
             }
             if(len-1>=1){
 
@@ -116,9 +127,10 @@ void close_redirections(){
 
     int i=0;
     while(i<POS_FILE_CNT){
-        close(io_file[i]);
+        //close(io_file[i]);
         i++;
     }
+    i_red_flag=0;
     dup2(s_stderr,2);
     dup2(s_stdout,1);
     dup2(s_stdin,0);

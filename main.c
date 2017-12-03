@@ -254,7 +254,7 @@ void sel_N_run(int c_name,char *args[]){
         ct++;
         i++;
     }
-    //printf("%d %s",ct, args[0]);
+    printf("%d %s\n",ct, args[0]);
     switch(c_name){
         case 0:
             //printf("qwerqwer %d %s ,ct,args[0]\n");
@@ -454,8 +454,7 @@ int check_Args(char *args[],int ct,int background){
     }else okay=4;//arguments not enough
     return okay;
 }
-int main(int x,char *y[],char **envp)
-{
+int main(int x,char *y[],char **envp) {
     /*char *asd[8];
     char str0[]="<";
     char str1[]="/home/berkay/Documents/asd.txt";
@@ -466,6 +465,7 @@ int main(int x,char *y[],char **envp)
     asd[1]=str1;
     asd[2]=str2;
     asd[3]=str3;
+
     asd[4]=str4;
     asd[5]=NULL;
     printf("%d",check_io(asd,3,0,1));
