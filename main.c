@@ -17,7 +17,6 @@ int io_place=-1;
 in the next command line; separate it into distinct arguments (using blanks as
 delimiters), and set the args array entries to point to the beginning of what
 will become null-terminated, C-style strings. */
-char *io_opt_o[];
 char io_o[40]="->\0->>\0>>\0>\0<";
 char *io_pt[ioptlen];
 
@@ -189,60 +188,11 @@ int setup(char inputBuffer[], char *args[],int *background) {
     //printf("%d\n",adf);
 } /* end of setup routine */
 
-int checkArgs(char *args[],int ct,int background){
-    ct-=1;
-    int okay=1;
-    if(ct>=0){
-        if(!strcmp(cmm_bookmark,args[0])){
-            if((okay=check_for_bm(args,ct,background))==1){
-                e_command(cmm_bookmark,args,background);
-            }
-        }else if(!strcmp(cmm_codesearch,args[0])){
-            if((okay=check_for_cs(args,ct,background))==1){
-                e_command(cmm_codesearch,args,background);
-            }
-        }else if(!strcmp(cmm_print,args[0])){
-            if((okay=check_for_print(args,ct,background))==1){
-                e_command(cmm_print,args,background);
-            }
-        }else if(!strcmp(cmm_set,args[0])){
-            if((okay=check_for_set(args,ct,background))==1){
-                //printf("dasdasdasdasdasdas\n");
-                e_command(cmm_set,args,background);
-            }
-        }else if(!strcmp(cmm_exit,args[0])&&ct==0){
-            return -1;
-        }else okay=5; //wrong arguments
-        //printf("dasdasdasdasdasdas %d\n",okay);
-    }else okay=4;//arguments not enough
-    return okay;
-}
-int check_if_bg(int background,int idx,int ct){
-    if(background==1&&(idx+1)==ct){
-        return 1;
-    }
-    return 2;
-}
-int check_for_print(char*args[],int ct,int background){
-    //printf("---%d",ct);
-    int okay=5;
-    if(ct==0) okay=1;
-    else if(ct>0){
-        if(ct==1){
-            okay=1;
-        }else okay=check_io(args,2,background);
-    }
-    /*if(ct>=1){
-        okay=check_if_bg(background,0,ct);
-        if(ct==2) okay=1;
-        else okay=check_if_bg(background,1,ct);
-    }*/
-
-    return okay;
-}
 void e_process(char path[],char *args[],int background){
-
-    execv(path,args);
+    if(fork()==0){
+        execv(path,args);
+    }
+    if(!background) wait(NULL);
 
 }
 void sel_N_run(int c_name,char *args[]){
@@ -282,73 +232,6 @@ void e_command(char name[],char *args[],int background){
     if(!strcmp(name,cmm_set)) c_name=3;
     sel_N_run(c_name,args);
 
-}
-int check_if_int(char str[]){
-    int i,lnt=strlen(str);
-    for(i=0;i<lnt;i++){
-        if(!(str[i]>=48&&str[i]<=57)){
-            return 0;
-        }
-    }
-    return 1;
-}
-int check_for_set(char*args[],int ct,int background){
-    int okay=0;
-    if(ct>=3){
-        int i;
-        //printf("%d\n",okay);
-        if(!strcmp(args[2],eq_sign)){
-            if(ct==3) okay=1;
-            else {
-                okay=check_io(args,4,background);
-                //printf("*********%d\n",okay);
-            }
-
-        }else okay=5; //wrong arguments
-    }else okay=4; //arguments not enough
-
-    return okay;
-}
-int check_for_cs(char*args[],int ct,int background){
-
-    int okay=0;
-    if(ct>=1){
-           if(!strcmp(args[1],cs_rec)){
-           if(ct>=2){
-               if(args[2][0]==34 && args[2][strlen(args[2])-1]==34){
-                   //printf("!!!!!!\n");
-                   if(ct==2) okay=1;
-                   else okay=check_io(args,3,background);
-               }else okay=6; //not a valid string
-           }else okay=4; //arguments not enough
-       }else if(args[1][0]==34 && args[1][strlen(args[1])-1]==34){
-
-           if(ct==1) okay=1;
-           else okay=check_io(args,2,background);
-       }else okay=5; //wrong arguments
-    }else okay=4; //arguments not enough
-
-    return okay;
-}
-int check_for_bm(char*args[],int ct,int background){
-    int okay=0;
-
-        if(ct>=1){
-            if(!strcmp(bm_list,args[1])||(args[1][0]==34&&args[1][strlen(args[1])-1]==34)){
-                if(ct==1) okay=1;
-                else okay=check_io(args,2,background);
-            }
-            else if(!strcmp(bm_dlt,args[1])||!strcmp(bm_idx,args[1])){
-                if(ct>=2){
-                    if(check_if_int(args[2])){
-                        if(ct==2) okay=1;
-                        else okay=check_io(args,3,background);
-                    }else okay=3;//value is not integer
-                }else okay=4;//arguments not enough
-            }else okay=5;//wrong arguments
-        }else okay=4;//arguments not enough
-
-    return okay;
 }
 void initialize(){
     cmm[0]=&cmm_bookmark[0];
