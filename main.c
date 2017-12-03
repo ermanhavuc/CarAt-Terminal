@@ -35,13 +35,13 @@ void init_io_pts(){
 
 int check_io(char *args[],int cur,int background){
     //init_io_pts();
-    printf("!!!!!!!!!!!!!!!!!!! %d\n",io_place);
+    //printf("!!!!!!!!!!!!!!!!!!! %d\n",io_place);
     int i=cur,op=0,start=0;
 
     int j=0,init_j=0,lim_j=5,tot_lim=2;
     char temp[80]="";
     while(args[i]!=NULL){
-        printf("!!!!!!!!!!!!!!!!!!! %d\n",io_place);
+        //printf("!!!!!!!!!!!!!!!!!!! %d\n",io_place);
         //printf("---------%s\n",args[i]);
 
         if(args[i+1]==NULL&&start==0){
@@ -56,7 +56,7 @@ int check_io(char *args[],int cur,int background){
             temp[0]=args[i][0];
         }
         //printf("-----%s\n",temp);
-        printf("1- %s %s %d %d %d\n",args[i],io_pt[j],op,tot_lim,i);
+        //printf("1- %s %s %d %d %d\n",args[i],io_pt[j],op,tot_lim,i);
         if(!strcmp(args[i],temp)&&op==0&&tot_lim){
             //printf("987977878798");
 
@@ -82,7 +82,7 @@ int check_io(char *args[],int cur,int background){
             }
         }
         //printf("%s\n",args[i]);
-        printf("2- %s %s %d %d %d\n",args[i],io_pt[j],op,tot_lim,i);
+        //printf("2- %s %s %d %d %d\n",args[i],io_pt[j],op,tot_lim,i);
         if(op==1&&access(args[i], F_OK)!=-1&&tot_lim) {
             printf("ok\n");
             op=0;
@@ -275,20 +275,13 @@ void sel_N_run(int c_name,char *args[]){
     }
 }
 void e_command(char name[],char *args[],int background){
-    int childpid,c_name;
-    //args[0]=path;
+    int c_name;
     if(!strcmp(name,cmm_bookmark)) c_name=0;
     if(!strcmp(name,cmm_codesearch)) c_name=1;
     if(!strcmp(name,cmm_print)) c_name=2;
     if(!strcmp(name,cmm_set)) c_name=3;
-    int *er;
-    if((childpid=fork())==0){
-        sel_N_run(c_name,args);
-        exit(0);
-    }
+    sel_N_run(c_name,args);
 
-    if(!background) wait(er);
-    printf("%d\n",errno);
 }
 int check_if_int(char str[]){
     int i,lnt=strlen(str);
@@ -380,7 +373,7 @@ int scan_io(char *args[],int background){
             if(args[i][0]>=48&&args[i][0]<=57&&temp[0]=='-'){
                 temp[0]=args[i][0];
             }
-            printf("!!!!!!!!!!!!!!!!!!!%s %s\n",args[i],temp);
+            //printf("!!!!!!!!!!!!!!!!!!!%s %s\n",args[i],temp);
             if(!strcmp(args[i],temp)){
                 io_place = i;
 
@@ -407,38 +400,52 @@ int check_Args(char *args[],int ct,int background){
 
                 if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
-                printf("!!!!!!!!!!!!!!!!!!! %d\n");
+                //printf("!!!!!!!!!!!!!!!!!!! %d\n");
                 if(io_place!=-1) {
-
+                    scan_f_name(args);
                     args[io_place]=NULL;
                 }
 
                 e_command(cmm_bookmark,args,background);
+                close_redirections();
+                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_codesearch,args[0])){
             if((okay=scan_io(args,background))==1){
                 if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
-                if(io_place!=-1) args[io_place]=NULL;
+                if(io_place!=-1) {
+                    scan_f_name(args);
+                    args[io_place]=NULL;
+                }
                 e_command(cmm_codesearch,args,background);
+                close_redirections();
+                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_print,args[0])){
             if((okay=scan_io(args,background))==1){
                 if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
-                if(io_place!=-1){
+                if(io_place!=-1) {
+                    scan_f_name(args);
                     args[io_place]=NULL;
-                    printf("!!!!!!!!!!!!!!!!!!!!\n");
                 }
                 e_command(cmm_print,args,background);
+                close_redirections();
+                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_set,args[0])){
             if((okay=scan_io(args,background))==1){
                 if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
-                if(io_place!=-1) args[io_place]=NULL;
+                if(io_place!=-1) {
+                    scan_f_name(args);
+                    args[io_place]=NULL;
+                }
                 //printf("dasdasdasdasdasdas\n");
                 e_command(cmm_set,args,background);
+                close_redirections();
+                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_exit,args[0])&&ct==0){
             return -1;
