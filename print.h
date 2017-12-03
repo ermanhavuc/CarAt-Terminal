@@ -17,16 +17,14 @@
 
 int print(int argc, char **argv, char **envp)
 {
-
-
-    if (argc == 2 ) {
+    if (argc == 1 ) {
         if (getenv(argv[1]) == NULL) {
             printf("There is no environment variable named as %s.", argv[1]);
         } else {
             printf("%s",getenv(argv[1]));
         }
 
-    } else if (argc > 2) {
+    } else if (argc > 1) {
         printf("Too many arguments!");
 
     } else {

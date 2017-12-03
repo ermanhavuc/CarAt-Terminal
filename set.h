@@ -7,10 +7,6 @@
 
 #endif //PROJECT2_SET_H
 
-//
-// Created by erman on 01.12.2017.
-//
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -19,44 +15,16 @@ void removeSpaces(char* source);
 
 int set(int argc, char **argv)
 {
-    char *mainArg = "export ";
-    int i = 1;
-
-    while(argv[i] != NULL){
-        char * new_str ;
-        if((new_str = malloc(strlen(mainArg)+strlen(argv[i])+1)) != NULL){
-            new_str[0] = '\0';
-            strcat(new_str,mainArg);
-            strcat(new_str,argv[i]);
-        }
-        mainArg = new_str;
-        i++;
+    if(argv[1] == '\0' || strcmp(argv[2],"=") || argv[3] == '\0' || check_if_int(argv[1]) || check_if_int(argv[3])){
+        printf("Wrong arguments!");
     }
-
-    removeSpaces(mainArg);
-
-    char **input = mainArg;
-
-    if (execvp(*input, input) < 0) {     /* execute the command  */
-        printf("*** ERROR: exec failed\n");
-        exit(1);
+    else {
+        setenv(argv[1],argv[3],0);
     }
-
-    //printf("%s\n",mainArg);
-
-    //execute(mainArg);
-    printf("asd\n");
-
-    /*printf("%s\n",mainArg);
-
-    printf("%s %s",argv[1],argv[3]);
-
-    printf("%d",setenv(argv[1],argv[3],0));
-    printf("%s",getenv(argv[1]));
-    */
 }
 
 void removeSpaces(char *source) {
+
     char* i = source;
     char* j = source;
     int c = 0;
@@ -74,23 +42,12 @@ void removeSpaces(char *source) {
     *i = 0;
 }
 
-void execute(char **argv)
-{
-    pid_t  pid;
-    int    status;
-
-    if ((pid = fork()) < 0) {     /* fork a child process           */
-        printf("*** ERROR: forking child process failed\n");
-        exit(1);
-    }
-    else if (pid == 0) {          /* for the child process:         */
-        if (execvp(*argv, argv) < 0) {     /* execute the command  */
-            printf("*** ERROR: exec failed\n");
-            exit(1);
+int check_if_int(char str[]){
+    int i,lnt=strlen(str);
+    for(i=0;i<lnt;i++){
+        if(!(str[i]>=48&&str[i]<=57)){
+            return 0;
         }
     }
-    else {                                  /* for the parent:      */
-        while (wait(&status) != pid)       /* wait for completion  */
-            ;
-    }
+    return 1;
 }

@@ -7,10 +7,6 @@
 
 #endif //PROJECT2_BOOKMARK_H
 
-//
-// Created by erman on 30.11.2017.
-//
-
 #include <bits/types/FILE.h>
 #include <stdio.h>
 #include <string.h>
@@ -20,9 +16,23 @@ void add(char line[]) ;
 void delete(int index) ;
 void list();
 void run(int index);
+void removeDQuotes(char *source);
 
-int bookmark(char *args[]) {
+int bookmark(char **args) {
 
+    if(strcmp(args[1], "-l") == 0){
+        list();
+    }
+    else if(strcmp(args[1], "-i") == 0){
+        run(strtol(args[2], NULL, 10));
+    }
+    else if(strcmp(args[1], "-d") == 0){
+        delete(strtol(args[2], NULL, 10));
+    }
+    else {
+        removeDQuotes(args[1]);
+        add(args[1]);
+    }
 
 }
 
@@ -31,52 +41,31 @@ void add(char line[]) {
     FILE *bookmarks;
     bookmarks = fopen("../bookmarks.txt", "a");
 
-    fprintf(bookmarks, line);
+    fprintf(bookmarks, "%s\n", line);
 
     fclose(bookmarks);
 }
 
-void delete(int index) {
+void delete(int linetodelete){
 
-    FILE *original, *copy;
-    char filename[17] = "../bookmarks.txt";
-    char ch = ' ';
-    int temp = 1;
+    FILE *file = fopen("../bookmarks.txt", "r");
+    FILE *filetemp = fopen("__tempfile__", "w");
 
-    //open file in read mode
-    original = fopen(filename, "r");
+    char line[128];
+    int countline = 0;
 
-    //open new file in write mode
-    copy = fopen("copy.txt", "w");
-
-    while (ch != EOF)
-    {
-        ch = getc(original);
-        //except the line to be deleted
-        if (temp != index+1)
-        {
-            //copy all lines in file replica.c
-            putc(ch, copy);
+    while(fgets(line, 255, file) != NULL){
+        if(countline != linetodelete){
+            fputs(line, filetemp);
         }
-        if (ch == '\n')
-        {
-            temp++;
-        }
+
+        countline++;
     }
 
-    truncate(copy,1);
+    fclose(file);
+    fclose(filetemp);
 
-    if(temp <= index){
-        printf("There is no command at %d !", index);
-    }
-
-    fclose(original);
-    fclose(copy);
-
-    remove(filename);
-
-    //rename the file replica.c to original name
-    rename("copy.txt", filename);
+    rename("__tempfile__", "../bookmarks.txt");
 }
 
 void list() {
@@ -84,6 +73,7 @@ void list() {
     FILE *bookmarks = fopen("../bookmarks.txt", "r");
     int count = 0;
     char line[128]; // or other suitable maximum line size
+
     if ( bookmarks != NULL ) {
         while (fgets(line, sizeof line, bookmarks) != NULL) {
             strtok(line, "\n");
@@ -103,24 +93,20 @@ void run(int index) {
     FILE *bookmarks = fopen("../bookmarks.txt", "r");
     int count = 0;
     char line[128]; // or other suitable maximum line size
-    if ( bookmarks != NULL )
-    {
-        while (fgets(line, sizeof line, bookmarks) != NULL) // read a line
-        {
-            if (count == index)
-            {
+
+    if ( bookmarks != NULL ){
+        while (fgets(line, sizeof line, bookmarks) != NULL){
+            if (count == index){
                 strtok(line, "\n");
                 break;
             }
-            else
-            {
+            else {
                 count++;
             }
         }
         fclose(bookmarks);
     }
-    else
-    {
+    else {
         printf("Bookmarks file does not exist!");
     }
 
@@ -129,4 +115,17 @@ void run(int index) {
      * run
      * run
      */
+}
+
+void removeDQuotes(char *source) {
+
+    char* i = source;
+    char* j = source;
+
+    while(*j != 0) {
+        *i = *j++;
+        if(*i != '"')
+            i++;
+    }
+    *i = 0;
 }

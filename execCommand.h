@@ -12,7 +12,7 @@ void execCommand(char **args, int background){
     char *dup = strdup(getenv("PATH"));
     char *s = dup;
     char *p = NULL;
-    int b = 0;
+    int flag = 0;
 
     do {
         p = strchr(s, ':');
@@ -30,7 +30,7 @@ void execCommand(char **args, int background){
 
                 if(strcmp(ent->d_name,args[0]) == 0){
 
-                    char * new_str ;
+                    char * new_str;
 
                     if((new_str = malloc(strlen(s)+strlen(args[0])+2)) != NULL){
                         new_str[0] = '\0';
@@ -41,13 +41,15 @@ void execCommand(char **args, int background){
 
                     s = new_str;
 
-                    args += 1;
+                    char **argv = args + 1;
 
-                    char *const parmList[] = {s, argv, NULL};
+                    //printf("%s", argv[1]);
+
+                    char *const parmList[] = {s, *argv, NULL};
 
                     e_process(s,parmList,background);
 
-                    b = 1;
+                    flag = 1;
 
                     break;
                 }
@@ -60,11 +62,15 @@ void execCommand(char **args, int background){
             return EXIT_FAILURE;
         }
 
-        if(b == 1) {
+        if(flag == 1) {
             break;
         }
 
         s = p + 1;
 
     } while (p != NULL);
+
+    if( flag == 0){
+        printf("There is no command named as %s",args[0]);
+    }
 }
