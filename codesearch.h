@@ -7,7 +7,7 @@
 
 #endif //PROJECT2_CODESEARCH_H
 
-#define PATH_NAME "/home/erman/Documents/test"
+#define PATH_NAME "/home/berkay/Documents4"
 //#define PATH_NAME "."
 #define LIM1 4
 #define LIM2 12
@@ -65,9 +65,11 @@ void findwords(char file_path[128],char word[80]){
     }else printf("no files\n");
 }
 void findfiles(DIR *dr,struct dirent *de,char path[],char word[],int rec){
+
     dr=opendir(path);
+
     if (dr == NULL){ //no directory
-        printf("Could not open current directory \n");
+        perror("Could not open current directory \n");
     }
     DIR *temp;
     struct dirent *temp_p;
@@ -114,15 +116,12 @@ int ipt_args(char *args[]){
     return ret_val;
 }
 int codesearch(int argc,char *args[]){
-    int i=0;
+    /*int i=0;
     while(args[i]!=NULL){
         printf("%s\n",args[i]);
         i++;
     }
-    exit(0);
-    scan_f_name(args);
-    printf("DONE\n");
-    exit(0);
+    return 1;*/
 
 
     struct dirent *de;
@@ -136,7 +135,6 @@ int codesearch(int argc,char *args[]){
         //path_arg=args[0];
         //printf("argc=%d arg1=%s\n",argc,arg[0]);
         rec=ipt_args(args);
-
 
     }else{
         perror("Arguments not enough\n");
