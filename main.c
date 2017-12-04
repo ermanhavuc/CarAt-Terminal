@@ -4,19 +4,38 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "mainControl.h"
-
+#include "history.h"
 
 
 int setup(char inputBuffer[], char *args[],int *background) {
-    int length, /* # of characters in the command line */
+    int length=0, /* # of characters in the command line */
             i,      /* loop index for accessing inputBuffer array */
             start,  /* index where beginning of next command parameter is */
             ct;     /* index of where to place the next parameter into args[] */
 
     ct = 0;
+
+
     /* read what the user enters on the command line */
-    if(bm_exe==0)length = read(STDIN_FILENO,inputBuffer,MAX_LINE);
+    if(bm_exe==0){
+        history();
+
+        return 0;
+    }else if(bm_exe==2){
+        //length=addToHistory(inputBuffer);
+        length=sk;
+    }else if(bm_exe==3){
+        //length = read(STDIN_FILENO,inputBuffer,MAX_LINE);
+        fgets(inputBuffer,MAX_LINE,stdin);
+        length=strlen(inputBuffer);
+        //printf(">>>>%s %d",inputBuffer,length);
+        bm_exe=0;
+        addToHistory(inputBuffer);
+    }
     else length=bm_len;
+    //printf("\n%s %d\n",inputBuffer,sk);
+
+
     /* 0 is the system predefined file descriptor for stdin (standard input),
        which is the user's screen in this case. inputBuffer by itself is the
        same as &inputBuffer[0], i.e. the starting address of where to store
@@ -35,6 +54,7 @@ int setup(char inputBuffer[], char *args[],int *background) {
         perror("error reading the command");
         exit(-1);           /* terminate with error code of -1 */
     }
+
     //printf(">>%s<<",inputBuffer);
     int isQuote=0,eq_sign_b=0;
     for (i=0;i<length;i++){ /* examine every character in the inputBuffer */
@@ -48,8 +68,10 @@ int setup(char inputBuffer[], char *args[],int *background) {
                     break;
                 }
                 if(start != -1){
+
                     args[ct] = &inputBuffer[start];    /* set up pointer */
                     ct++;
+
                 }
                 inputBuffer[i] = '\0'; /* add a null char; make a C string */
                 start = -1;
@@ -67,9 +89,11 @@ int setup(char inputBuffer[], char *args[],int *background) {
                 }
                 inputBuffer[i] = '\0';
                 args[ct] = NULL; /* no more arguments to this command */
+
                 break;
 
             default :             /* some other character */
+
                 if (start == -1)
                     start = i;
                 if (inputBuffer[i] == '&'){
@@ -78,7 +102,9 @@ int setup(char inputBuffer[], char *args[],int *background) {
                 }else if(inputBuffer[i]==34){
                     isQuote=(isQuote+1)%2;
                 }
+
         } /* end of switch */
+        //printf("--%s",args[0]);
     }    /* end of for */
     args[ct] = NULL; /* just in case the input line was > 80 */
     //printf("%s",inputBuffer);
@@ -90,8 +116,10 @@ int setup(char inputBuffer[], char *args[],int *background) {
         //}
         //printf("args %d = %s ve %c ve %d bg=%d\n",i,args[i],args[i][strlen(args[i])-1],ret,*background);
     //}
-    int adf=check_Args(args,ct,*background);
-    printf("%d\n",adf);
+
+    check_Args(args,ct,*background);
+
+    //printf("%d\n",adf);
     //printf("%d\n",adf);
 } /* end of setup routine */
 
@@ -122,7 +150,7 @@ int main(int x,char *y[],char **envp) {
     while (1){
 
         background = 0;
-        //printf("myshell: ");
+        printf("myshell: ");
         /*setup() calls exit() when Control-D is entered */
         end=setup(inputBuffer, args, &background);
         printf("\n---\n");

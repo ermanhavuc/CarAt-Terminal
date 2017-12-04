@@ -139,8 +139,10 @@ int scan_io(char *args[],int background){
 }
 
 int check_Args(char *args[],int ct,int background){
+    //printf("\nsokomel %s %d %d\n",args[0],ct,background);
     ct-=1;
     int okay=1;
+
     if(ct>=0){
 
         if(!strcmp(cmm_bookmark,args[0])){
@@ -204,6 +206,7 @@ int check_Args(char *args[],int ct,int background){
         }else if(!strcmp(cmm_exit,args[0])&&ct==0){
             return -1;
         }else if(scan_io(args,background)==1){
+
             if(args[ct]!=NULL) printf("%s\n",args[ct]);
             if(background==1) args[ct]=NULL;
             if(io_place!=-1) {
@@ -212,6 +215,7 @@ int check_Args(char *args[],int ct,int background){
             }
             execCommand(args,background);
             close_redirections();
+
 
         }else perror("Wrong Arguments!\n");
         //printf("dasdasdasdasdasdas %d\n",okay);

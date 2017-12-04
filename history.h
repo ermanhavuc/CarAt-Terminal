@@ -11,7 +11,8 @@
 #define PROJECT2_HISTORY_H
 
 #endif //PROJECT2_HISTORY_H
-
+char sokomel[128]="";
+int sk=0;
 int history(){
 
     int c;
@@ -83,6 +84,7 @@ int history(){
         else{
             printf("\33[2K\r");
             printf("CarAt Shell: ");
+            strcpy(sokomel,"");
         }
 
         if (index == (lineNumber+2)){
@@ -98,6 +100,18 @@ int history(){
     if(index == (lineNumber + 2)){
         index = lineNumber;
     }
+    if(!strcmp(sokomel,"")){
+        bm_exe=3;
+        return 0;
+    }
+    bm_exe=2;
+    strcat(sokomel,"\n");
+    sk=strlen(sokomel);
+    char *ag[80];
+    int bg=0;
+    setup(sokomel,ag,&bg);
+    strcpy(sokomel,"");
+    bm_exe=0;
 
 }
 
@@ -138,6 +152,7 @@ void showCommand(int index) {
     else {
         printf("History file does not exist!");
     }
+    strcpy(sokomel,line);
 }
 
 int getLineNumber(){
