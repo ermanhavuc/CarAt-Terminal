@@ -47,8 +47,14 @@ int history(){
             switch(getchar()) { // the real value
                 case 'A':
                     if(index > 0){
-                        index--;
-                        waitFlag = 0;
+                        if (index == lineNumber + 2){
+                            waitFlag = 1;
+                            index--;
+                        }
+                        else{
+                            waitFlag = 0;
+                            index--;
+                        }
                     }
                     break;
 
@@ -59,21 +65,24 @@ int history(){
                             index++;
                         }
                         else{
-
                             waitFlag = 0;
                             index++;
                         }
                     }
                     break;
+
+                default:
+                    printf("myshell: ");
+                    break;
             }
         }
-
         if(!waitFlag){
             printf("\33[2K\r");
             showCommand(index);
         }
         else{
             printf("\33[2K\r");
+            printf("myshell: ");
         }
 
         if (index == (lineNumber+2)){
@@ -86,13 +95,18 @@ int history(){
     /*restore the old settings*/
     tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
 
+    if(index == (lineNumber + 2)){
+        index = lineNumber;
+    }
+
 }
 
 void addToHistory(char **input){
 
     FILE *history;
-    history = fopen("../history.txt", "a");
-
+    history = fopen("history.txt", "a");
+    int strl = strlen(input);
+    input[strl - 1] = 0;
     fprintf(history, "%s", input);
 
     fclose(history);
@@ -102,12 +116,14 @@ void showCommand(int index) {
 
     FILE *history = fopen("history.txt", "r");
     int count = 0;
+    char *str;
     char line[128]; // or other suitable maximum line size
 
     if (history != NULL){
-        while (fgets(line, sizeof line, history) != NULL){
+        while ((str=fgets(line, sizeof line, history)) != NULL && str != '\n'){
             if (count == index){
                 strtok(line,"\n");
+                printf("myshell: ");
                 printf("%s",line);
                 break;
             }
@@ -141,5 +157,5 @@ int getLineNumber(){
         fclose(history);
     }
 
-    return lines;
+    return lines-1;
 }
