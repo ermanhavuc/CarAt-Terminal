@@ -20,7 +20,6 @@ void execCommand(char **args, int background){
         if (p != NULL) {
             p[0] = 0;
         }
-
         DIR *dir;
         struct dirent *ent;
 
