@@ -37,7 +37,7 @@ int history(){
     in the non-canonical mode*/
 
     int index = 0;
-    int lineNumber = getLineNumber();
+    int lineNumber = getLineNumber() + 1;
     int waitFlag = 0;
     index = lineNumber + 1;
 
@@ -72,7 +72,7 @@ int history(){
                     break;
 
                 default:
-                    printf("myshell: ");
+                    printf("CarAt Shell: ");
                     break;
             }
         }
@@ -82,7 +82,7 @@ int history(){
         }
         else{
             printf("\33[2K\r");
-            printf("myshell: ");
+            printf("CarAt Shell: ");
         }
 
         if (index == (lineNumber+2)){
@@ -103,13 +103,15 @@ int history(){
 
 void addToHistory(char **input){
 
-    FILE *history;
-    history = fopen("history.txt", "a");
-    int strl = strlen(input);
-    input[strl - 1] = 0;
-    fprintf(history, "%s", input);
+    if(input != NULL){
+        FILE *history;
+        history = fopen("history.txt", "a");
+        int str = strlen(input);
+        input[str - 1] = 0;
+        fprintf(history, "%s", input);
 
-    fclose(history);
+        fclose(history);
+    }
 }
 
 void showCommand(int index) {
@@ -123,7 +125,7 @@ void showCommand(int index) {
         while ((str=fgets(line, sizeof line, history)) != NULL && str != '\n'){
             if (count == index){
                 strtok(line,"\n");
-                printf("myshell: ");
+                printf("CarAt Shell: ");
                 printf("%s",line);
                 break;
             }
@@ -157,5 +159,5 @@ int getLineNumber(){
         fclose(history);
     }
 
-    return lines-1;
+    return lines-2;
 }
