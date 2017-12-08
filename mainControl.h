@@ -45,6 +45,7 @@ void sel_N_run(int c_name,char *args[]){
         ct++;
         i++;
     }
+    pid_t cp;
     //printf("%d %s\n",ct, args[0]);
     switch(c_name){
         case 0:
@@ -59,10 +60,13 @@ void sel_N_run(int c_name,char *args[]){
             print(ct,args,env);
             break;
         case 3:
-
             set(ct,args);
             break;
         case 4:
+            cp=waitpid(-1,NULL,WNOHANG);
+            if(cp==0){
+                printf("Before exit, please kill child processes first.\n");
+            }else exit(0);
             break;
     }
 }
@@ -72,6 +76,7 @@ void e_command(char name[],char *args[],int background){
     if(!strcmp(name,cmm_codesearch)) c_name=1;
     if(!strcmp(name,cmm_print)) c_name=2;
     if(!strcmp(name,cmm_set)) c_name=3;
+    if(!strcmp(name,cmm_exit)) c_name=4;
     sel_N_run(c_name,args);
 
 }
@@ -237,7 +242,7 @@ int check_Args(char *args[],int ct,int background){
                 printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_exit,args[0])&&ct==0){
-            return -1;
+            e_command(cmm_exit,args,background);
         }else if(scan_io(args,background)==1){
 
             if(args[ct]!=NULL) printf("%s\n",args[ct]);
@@ -250,9 +255,13 @@ int check_Args(char *args[],int ct,int background){
             close_redirections();
 
 
-        }else perror("Wrong Arguments!\n");
-        //printf("dasdasdasdasdasdas %d\n",okay);
-    }else okay=4;//arguments not enough
+        }else{
+            fprintf(stderr,"Arguments are not valid.\n");
+        }
+    }else {
+        fprintf(stderr,"Argument count is not enough.\n");
+        okay=4;
+    }//arguments not enough
     return okay;
 }
 void init_io_pts(){

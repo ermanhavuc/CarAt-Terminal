@@ -46,6 +46,7 @@ void execCommand(char **args, int background){
 
                     char *const parmList[] = {s, *argv, NULL};
 
+
                     e_process(s,parmList,background);
 
                     flag = 1;

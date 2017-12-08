@@ -19,16 +19,12 @@ int setup(char inputBuffer[], char *args[],int *background) {
     /* read what the user enters on the command line */
     if(bm_exe==0){
         history();
-
         return 0;
     }else if(bm_exe==2){
-        //length=addToHistory(inputBuffer);
         length=sk;
     }else if(bm_exe==3){
-        //length = read(STDIN_FILENO,inputBuffer,MAX_LINE);
         fgets(inputBuffer,MAX_LINE,stdin);
         length=strlen(inputBuffer);
-        //printf(">>>>%s %d",inputBuffer,length);
         bm_exe=0;
         addToHistory(inputBuffer);
     }else if(bm_exe==4){
@@ -36,7 +32,6 @@ int setup(char inputBuffer[], char *args[],int *background) {
 
     }
     else length=bm_len;
-    //printf("\n%s %d\n",inputBuffer,sk);
 
 
     /* 0 is the system predefined file descriptor for stdin (standard input),
@@ -107,18 +102,8 @@ int setup(char inputBuffer[], char *args[],int *background) {
                 }
 
         } /* end of switch */
-        //printf("--%s",args[0]);
     }    /* end of for */
     args[ct] = NULL; /* just in case the input line was > 80 */
-    //printf("%s",inputBuffer);
-    //for (i = 0; i < ct; i++) {
-      //  int ret = checkArgs(args,ct,*background);
-        //if(ret==-1) {
-          //  printf("----\n");
-            //return -1;
-        //}
-        //printf("args %d = %s ve %c ve %d bg=%d\n",i,args[i],args[i][strlen(args[i])-1],ret,*background);
-    //}
 
     check_Args(args,ct,*background);
 
@@ -129,23 +114,10 @@ int setup(char inputBuffer[], char *args[],int *background) {
 
 
 int main(int x,char *y[],char **envp) {
-    /*char *asd[8];
-    char str0[]="<";
-    char str1[]="/home/berkay/Documents/asd.txt";
-    char str2[]="5>";
-    char str3[]="/home/berkay/Documents/asd.txt";
-    char str4[]="&";
-    asd[0]=str0;
-    asd[1]=str1;
-    asd[2]=str2;
-    asd[3]=str3;
-
-    asd[4]=str4;
-    asd[5]=NULL;
-    printf("%d",check_io(asd,3,0,1));*/
-
     env=envp;
     initialize();
+
+
     int end =0;
     char inputBuffer[MAX_LINE]; /*buffer to hold command entered */
     int background; /* equals 1 if a command is followed by '&' */
@@ -153,11 +125,10 @@ int main(int x,char *y[],char **envp) {
     while (1){
 
         background = 0;
-        printf("myshell: ");
+        printf("CarAt Shell: ");
         /*setup() calls exit() when Control-D is entered */
         end=setup(inputBuffer, args, &background);
         printf("\n---\n");
-        if(end==-1) break;
         /** the steps are:
         (1) fork a child process using fork()
         (2) the child process will invoke execv()

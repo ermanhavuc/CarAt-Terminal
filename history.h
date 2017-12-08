@@ -41,7 +41,6 @@ int history(){
     int lineNumber = getLineNumber() + 1;
     int waitFlag = 0;
     index = lineNumber + 1;
-
     while((c=getchar())!= '\n'){
         if (c == '\033') { // if the first value is esc
             getchar(); // skip the [
@@ -79,6 +78,7 @@ int history(){
         }
         if(!waitFlag){
             printf("\33[2K\r");
+            printf("CarAt Shell: ");
             showCommand(index);
         }
         else{
@@ -89,6 +89,7 @@ int history(){
 
         if (index == (lineNumber+2)){
             printf("\33[2K\r");
+            printf("CarAt Shell: ");
             showCommand(0);
             waitFlag = 0;
         }
@@ -96,7 +97,6 @@ int history(){
 
     /*restore the old settings*/
     tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
-
     if(index == (lineNumber + 2)){
         index = lineNumber;
     }
@@ -136,10 +136,11 @@ void showCommand(int index) {
     char line[128]; // or other suitable maximum line size
 
     if (history != NULL){
+
         while ((str=fgets(line, sizeof line, history)) != NULL && str != '\n'){
             if (count == index){
+
                 strtok(line,"\n");
-                printf("CarAt Shell: ");
                 printf("%s",line);
                 break;
             }

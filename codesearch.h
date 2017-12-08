@@ -69,7 +69,8 @@ void findfiles(DIR *dr,struct dirent *de,char path[],char word[],int rec){
     dr=opendir(path);
 
     if (dr == NULL){ //no directory
-        perror("Could not open current directory!!!!\n");
+        fprintf(stderr,"Could not open given directory.\n");
+        return 10;
     }
     DIR *temp;
     struct dirent *temp_p;
@@ -96,7 +97,6 @@ void findfiles(DIR *dr,struct dirent *de,char path[],char word[],int rec){
             findwords(temp_str,word);
         }
     }
-    //printf("find files close\n");
 }
 
 
@@ -108,51 +108,45 @@ int test_args(int argc,char *args[]){
                     strcpy(word_arg,&args[1][1]);
                     strcpy(&word_arg[len-2],&args[1][len]);
                     return 0;
-                }else perror("*wrong arguments");
+                }else{
+                    printf(stderr,"Arguments not valid.\n");
+                    return 10;
+                }
         }else if(argc==3){
             size_t len=strlen(args[2]);
             if(!strcmp(args[1],"-r")&&args[2][0]==34&&args[2][len-1]==34){
                 strcpy(word_arg,&args[2][1]);
                 strcpy(&word_arg[len-2],&args[2][len]);
-                printf("*********%s\n",word_arg);
                 return 1;
             }
-        }else perror("arguments not enough");
-    }else perror("too many arguments\n");
+        }else{
+            printf(stderr,"Argument count is not enough.\n");
+            return 10;
+        }
+    }else{
+        printf(stderr,"Argument count is too much.");
+        return 10;
+    }
 
 }
 int codesearch(int argc,char *args[]){
-    /*
-    return 1;*/
 
 
     struct dirent *de;
     int rec=0;
     DIR *dr;
-    //char *path_arg;
-
-    //args[1]="\"if(\"";
-    //args[2]=NULL;
     if(argc>=2){
-        //path_arg=args[0];
-        //printf("argc=%d arg1=%s\n",argc,arg[0]);
         rec=test_args(argc,args);
-    //printf("----%d",rec);
     }else{
-        perror("Arguments not enough\n");
+        printf(stderr,"Argument count is not enough.\n");
+        return 10;
     }
     char ar[45];
     strcpy(ar,"");
     int i=0;
     while(args[i]!=NULL){
-        //printf("args -- %s %d\n",args[i],argc);
         i++;
     }
-
-    //scan_for_pos_vals("asd.c");
-    //findwords("/home/berkay/Documents/OPSYS/test/main.c","for");
-    //printf("%s\n",path);
     findfiles(dr,de,path,word_arg,rec);
-    //closedir(dr);
     return 0;
 }
