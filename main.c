@@ -106,9 +106,6 @@ int setup(char inputBuffer[], char *args[],int *background) {
     args[ct] = NULL; /* just in case the input line was > 80 */
 
     check_Args(args,ct,*background);
-
-    //printf("%d\n",adf);
-    //printf("%d\n",adf);
 } /* end of setup routine */
 
 
