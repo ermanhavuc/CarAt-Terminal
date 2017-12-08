@@ -59,6 +59,7 @@ void sel_N_run(int c_name,char *args[]){
             print(ct,args,env);
             break;
         case 3:
+
             set(ct,args);
             break;
         case 4:
@@ -75,7 +76,7 @@ void e_command(char name[],char *args[],int background){
 
 }
 
-void read_from_stdin(char cmm[],char *args[],int background){
+void read_from_stdin(char cmm[],char *args[],int background,int withQ){
     int ct=0;
     char st[1024] = "",buff[1024];
     while (NULL!=read(STDIN_FILENO,buff,1024)){//fgets(buff, sizeof(buff)
@@ -86,13 +87,37 @@ void read_from_stdin(char cmm[],char *args[],int background){
                     st[j]=buff[i];
                     i++;
                     j++;
+                    printf("\nargs= %s %s\n",&st[0],args[2]);
                 }while (buff[i]!=34&&buff[i]!='\n'&&buff[i]!=NULL);
                 st[j]=buff[i];
 
-                args[io_place]=&st[0];
-                printf("\nargs= %s %d\n",args[0],0);
+                if(withQ) args[io_place]=&st[0];
+                else{
+                    args[io_place]=&st[1];
+                    st[j]=NULL;
+                }
+                if(args[io_place+1]!=NULL) args[io_place+1]=NULL;
                 printf("\nargs= %s %d\n",args[io_place],io_place);
-                e_command(cmm,args,background);
+                if(!strcmp(cmm,"set")) {
+                    char ib[80]="";
+                    char *ags[80];
+                    int b;
+                    int k=0;
+                    while(args[k]!=NULL){
+                        strcat(ib,args[k]);
+                        strcat(ib," ");
+
+                        k++;
+                    }
+                    bm_exe=4;
+                    i_red_flag=0;
+                    printf("-----------%s\n",ib);
+                    setup(ib,ags,&b);
+                    i_red_flag=1;
+                    bm_exe=0;
+                }
+                else e_command(cmm,args,background);
+
                 j=0;
             }
             i++;
@@ -158,7 +183,7 @@ int check_Args(char *args[],int ct,int background){
                 }
                 if(i_red_flag==1){
                     args[io_place+1]=NULL;
-                    read_from_stdin(cmm_bookmark,args,background);
+                    read_from_stdin(cmm_bookmark,args,background,1);
                 } else e_command(cmm_bookmark,args,background);
                 close_redirections();
                 printf("Redirs closed\n");
@@ -173,7 +198,7 @@ int check_Args(char *args[],int ct,int background){
                 }
                 if(i_red_flag==1){
                     args[io_place+1]=NULL;
-                    read_from_stdin(cmm_codesearch,args,background);
+                    read_from_stdin(cmm_codesearch,args,background,1);
                 }else e_command(cmm_codesearch,args,background);
                 close_redirections();
                 printf("Redirs closed\n");
@@ -186,12 +211,17 @@ int check_Args(char *args[],int ct,int background){
                     scan_f_name(args);
                     args[io_place]=NULL;
                 }
-                e_command(cmm_print,args,background);
+                if(i_red_flag==1){
+                    args[io_place+1]=NULL;
+                    read_from_stdin(cmm_print,args,background,0);
+                }else e_command(cmm_print,args,background);
                 close_redirections();
                 printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_set,args[0])){
+
             if((okay=scan_io(args,background))==1){
+
                 if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
                 if(io_place!=-1) {
@@ -199,8 +229,11 @@ int check_Args(char *args[],int ct,int background){
                     args[io_place]=NULL;
                 }
                 //printf("dasdasdasdasdasdas\n");
-                e_command(cmm_set,args,background);
-                close_redirections();
+                if(i_red_flag==1){
+                    args[io_place+1]=NULL;
+                    read_from_stdin(cmm_set,args,background,0);
+                }else e_command(cmm_set,args,background);
+                if(bm_exe!=4) close_redirections();
                 printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_exit,args[0])&&ct==0){

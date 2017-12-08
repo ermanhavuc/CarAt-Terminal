@@ -31,6 +31,9 @@ int setup(char inputBuffer[], char *args[],int *background) {
         //printf(">>>>%s %d",inputBuffer,length);
         bm_exe=0;
         addToHistory(inputBuffer);
+    }else if(bm_exe==4){
+        length=strlen(inputBuffer);
+
     }
     else length=bm_len;
     //printf("\n%s %d\n",inputBuffer,sk);

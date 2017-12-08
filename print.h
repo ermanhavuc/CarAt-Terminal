@@ -17,6 +17,7 @@
 
 int print(int argc, char **argv, char **envp)
 {
+    argc-=1;
     if (argc == 1 ) {
         if (getenv(argv[1]) == NULL) {
             printf("There is no environment variable named as %s.", argv[1]);
