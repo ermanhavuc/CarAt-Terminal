@@ -1,7 +1,3 @@
-//
-// Created by root on 02.12.2017.
-//
-
 #include <bits/types/FILE.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -30,38 +26,37 @@ void rf_n_update_fd(char file_path[],int i0o1){
             io_file[0]= open(file_path,MODE_FLAGS_RW_AP, PERMISSION);//input
 
             if(io_file[0]==-1){
-                perror("failed to open file\n");
+                fprintf(stderr,"Failed to open file.\n");
             }
             if (dup2(io_file[0], STDIN_FILENO) == -1) {
-                perror("Failed to redirect standard input\n");
-            }else printf("GOOD!!!!!! %d\n",i0o1);
+                fprintf(stderr,"Failed to redirect standard input.\n");
+            }
             break;
         case 23:
         case 2:
-            //printf("SEND1-\n");
             io_file[1]= open(file_path,MODE_FLAGS_OW, PERMISSION);//output overwrite
             if (dup2(io_file[1], STDOUT_FILENO) == -1) {
-                perror("Failed to redirect standard output\n");
-            }else printf("GOOD!!!!!!%d\n",i0o1);
+                fprintf(stderr,"Failed to redirect standard output\n");
+            }
             break;
         case 20:
         case 3:
             io_file[2]= open(file_path,MODE_FLAGS_RW_AP, PERMISSION);//output append
             if (dup2(io_file[2], STDOUT_FILENO) == -1) {
-                perror("Failed to redirect standard output\n");
-            }else printf("GOOD!!!!!!%d\n",i0o1);
+                fprintf(stderr,"Failed to redirect standard output\n");
+            }
             break;
         case 33:
             io_file[3]= open(file_path,MODE_FLAGS_OW, PERMISSION);//error overwrite
             if (dup2(io_file[3], STDERR_FILENO) == -1) {
-                perror("Failed to redirect standard error\n");
-            }else printf("GOOD!!!!!!%d\n",i0o1);
+                fprintf(stderr,"Failed to redirect standard error\n");
+            }
             break;
         case 30:
             io_file[4]= open(file_path,MODE_FLAGS_RW_AP, PERMISSION);//error overwrite
             if (dup2(io_file[4], STDERR_FILENO) == -1) {
-                perror("Failed to redirect standard error\n");
-            }else printf("GOOD!!!!!!%d\n",i0o1);
+                fprintf(stderr,"Failed to redirect standard error\n");
+            }
             break;
     }
 }
@@ -69,12 +64,7 @@ void rf_n_update_fd(char file_path[],int i0o1){
 void scan_f_name(char *args[]){
     int i=0,k=0,send=0;
     char temp[5]="";
-    /*while(args[k]!=NULL){
-        printf("SEND- %d %s\n",send,args[k]);
-        k++;
-    }*/
     while(args[i]!=NULL){
-        //printf(">>>>>>>>>>>>-- %s\n",args[i]);
 
         send = 0;
         ssize_t len=strlen(args[i]);
@@ -117,7 +107,6 @@ void scan_f_name(char *args[]){
             send=1;
             rf_n_update_fd(args[i+1],send);
         }
-        //printf("SEND2- %d %s\n",send,args[i]);
         i++;
     }
 }
@@ -126,7 +115,6 @@ void close_redirections(){
 
     int i=0;
     while(i<POS_FILE_CNT){
-        //close(io_file[i]);
         i++;
     }
     i_red_flag=0;

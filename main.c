@@ -49,11 +49,10 @@ int setup(char inputBuffer[], char *args[],int *background) {
   However, if this occurs, errno is set to EINTR. We can check this  value
   and disregard the -1 value */
     if ( (length < 0) && (errno != EINTR) ) {
-        perror("error reading the command");
+        fprintf(stderr,"Error reading the command.\n");
         exit(-1);           /* terminate with error code of -1 */
     }
 
-    //printf(">>%s<<",inputBuffer);
     int isQuote=0,eq_sign_b=0;
     for (i=0;i<length;i++){ /* examine every character in the inputBuffer */
         switch (inputBuffer[i]){

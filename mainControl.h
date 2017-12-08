@@ -46,10 +46,8 @@ void sel_N_run(int c_name,char *args[]){
         i++;
     }
     pid_t cp;
-    //printf("%d %s\n",ct, args[0]);
     switch(c_name){
         case 0:
-            //printf("qwerqwer %d %s ,ct,args[0]\n");
             bookmark(args);
             break;
         case 1:
@@ -65,7 +63,7 @@ void sel_N_run(int c_name,char *args[]){
         case 4:
             cp=waitpid(-1,NULL,WNOHANG);
             if(cp==0){
-                printf("Before exit, please kill child processes first.\n");
+                fprintf(stderr,"Before exit, please kill child processes first.\n");
             }else exit(0);
             break;
     }
@@ -92,7 +90,7 @@ void read_from_stdin(char cmm[],char *args[],int background,int withQ){
                     st[j]=buff[i];
                     i++;
                     j++;
-                    printf("\nargs= %s %s\n",&st[0],args[2]);
+
                 }while (buff[i]!=34&&buff[i]!='\n'&&buff[i]!=NULL);
                 st[j]=buff[i];
 
@@ -102,7 +100,6 @@ void read_from_stdin(char cmm[],char *args[],int background,int withQ){
                     st[j]=NULL;
                 }
                 if(args[io_place+1]!=NULL) args[io_place+1]=NULL;
-                printf("\nargs= %s %d\n",args[io_place],io_place);
                 if(!strcmp(cmm,"set")) {
                     char ib[80]="";
                     char *ags[80];
@@ -116,7 +113,6 @@ void read_from_stdin(char cmm[],char *args[],int background,int withQ){
                     }
                     bm_exe=4;
                     i_red_flag=0;
-                    printf("-----------%s\n",ib);
                     setup(ib,ags,&b);
                     i_red_flag=1;
                     bm_exe=0;
@@ -152,7 +148,6 @@ int scan_io(char *args[],int background){
             if(args[i][0]>=48&&args[i][0]<=57&&temp[0]=='-'){
                 temp[0]=args[i][0];
             }
-            //printf("!!!!!!!!!!!!!!!!!!!%s %s\n",args[i],temp);
             if(!strcmp(args[i],temp)){
                 io_place = i;
 
@@ -163,13 +158,11 @@ int scan_io(char *args[],int background){
         j=0;
         i++;
     }
-    printf("OKAY!!!\n");
     if(background==1&&strcmp(args[i-1],"&")) return 5;
     return 1;
 }
 
 int check_Args(char *args[],int ct,int background){
-    //printf("\nsokomel %s %d %d\n",args[0],ct,background);
     ct-=1;
     int okay=1;
 
@@ -179,9 +172,7 @@ int check_Args(char *args[],int ct,int background){
 
             if((okay=scan_io(args,background))==1){
 
-                if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
-                //printf("!!!!!!!!!!!!!!!!!!! %d\n");
                 if(io_place!=-1) {
                     scan_f_name(args);
                     args[io_place]=NULL;
@@ -191,11 +182,9 @@ int check_Args(char *args[],int ct,int background){
                     read_from_stdin(cmm_bookmark,args,background,1);
                 } else e_command(cmm_bookmark,args,background);
                 close_redirections();
-                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_codesearch,args[0])){
             if((okay=scan_io(args,background))==1){
-                if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
                 if(io_place!=-1) {
                     scan_f_name(args);
@@ -206,11 +195,9 @@ int check_Args(char *args[],int ct,int background){
                     read_from_stdin(cmm_codesearch,args,background,1);
                 }else e_command(cmm_codesearch,args,background);
                 close_redirections();
-                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_print,args[0])){
             if((okay=scan_io(args,background))==1){
-                if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
                 if(io_place!=-1) {
                     scan_f_name(args);
@@ -221,31 +208,25 @@ int check_Args(char *args[],int ct,int background){
                     read_from_stdin(cmm_print,args,background,0);
                 }else e_command(cmm_print,args,background);
                 close_redirections();
-                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_set,args[0])){
 
             if((okay=scan_io(args,background))==1){
-
-                if(args[ct]!=NULL) printf("%s\n",args[ct]);
                 if(background==1) args[ct]=NULL;
                 if(io_place!=-1) {
                     scan_f_name(args);
                     args[io_place]=NULL;
                 }
-                //printf("dasdasdasdasdasdas\n");
                 if(i_red_flag==1){
                     args[io_place+1]=NULL;
                     read_from_stdin(cmm_set,args,background,0);
                 }else e_command(cmm_set,args,background);
                 if(bm_exe!=4) close_redirections();
-                printf("Redirs closed\n");
             }
         }else if(!strcmp(cmm_exit,args[0])&&ct==0){
             e_command(cmm_exit,args,background);
         }else if(scan_io(args,background)==1){
 
-            if(args[ct]!=NULL) printf("%s\n",args[ct]);
             if(background==1) args[ct]=NULL;
             if(io_place!=-1) {
                 scan_f_name(args);
@@ -261,7 +242,7 @@ int check_Args(char *args[],int ct,int background){
     }else {
         fprintf(stderr,"Argument count is not enough.\n");
         okay=4;
-    }//arguments not enough
+    }
     return okay;
 }
 void init_io_pts(){
@@ -270,25 +251,17 @@ void init_io_pts(){
     io_pt[2]=&io_o[7];
     io_pt[3]=&io_o[10];
     io_pt[4]=&io_o[12];
-    /*int i;
-    for(i=0;i<4;i++){
-        printf("%s\n",io_pt[i]);
-    }*/
 }
 
 int check_io(char *args[],int cur,int background){
-    //init_io_pts();
-    //printf("!!!!!!!!!!!!!!!!!!! %d\n",io_place);
+
     int i=cur,op=0,start=0;
 
     int j=0,init_j=0,lim_j=5,tot_lim=2;
     char temp[80]="";
     while(args[i]!=NULL){
-        //printf("!!!!!!!!!!!!!!!!!!! %d\n",io_place);
-        //printf("---------%s\n",args[i]);
 
         if(args[i+1]==NULL&&start==0){
-            //printf("%d %s %d %d\n",args[i][0],io_pt[j],op,tot_lim);
             if(args[i][0]==38&&background==1){
 
                 return 1;
@@ -298,10 +271,7 @@ int check_io(char *args[],int cur,int background){
         if(args[i][0]>=48&&args[i][0]<=57&&temp[0]=='-'){
             temp[0]=args[i][0];
         }
-        //printf("-----%s\n",temp);
-        //printf("1- %s %s %d %d %d\n",args[i],io_pt[j],op,tot_lim,i);
         if(!strcmp(args[i],temp)&&op==0&&tot_lim){
-            //printf("987977878798");
 
             op=1;
             start=1;
@@ -321,25 +291,21 @@ int check_io(char *args[],int cur,int background){
         }else if(op==0){
             j++;
             if(j==lim_j){
+
                 return 5;
             }
         }
-        //printf("%s\n",args[i]);
-        //printf("2- %s %s %d %d %d\n",args[i],io_pt[j],op,tot_lim,i);
         if(op==1&&access(args[i], F_OK)!=-1&&tot_lim) {
-            printf("ok\n");
             op=0;
             tot_lim--;
             i++;
             start=0;
         }else if(op==1){
-            printf("NO FILE EXISTS IN THAT NAME %s\n",args[i]);
-            printf("no\n");
+            fprintf(stderr,"No file exists in that name: %s\n",args[i]);
             return 5;
         }
 
     }
-    printf("yes\n");
 
     return 1;
 }

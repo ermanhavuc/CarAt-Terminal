@@ -6,7 +6,6 @@
 #define MAX_LINE 128 /* 80 chars per line, per command, should be enough. */
 #define NUM_OF_CMM 5 //defines total numbers of commands
 #define MSGSIZE 6
-//#include "ioRedirection.h"
 
 char cmm_bookmark[80]="bookmark";
 char bm_list[3]="-l";

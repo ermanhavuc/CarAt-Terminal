@@ -8,7 +8,6 @@
 #endif //PROJECT2_CODESEARCH_H
 
 #define PATH_NAME "."
-//#define PATH_NAME "."
 #define LIM1 4
 #define LIM2 12
 
@@ -40,15 +39,12 @@ void findwords(char file_path[128],char word[80]){
     ssize_t len=0;
     fpos_t pos;
     int i=0,ct=1;
-    //printf("char=%c\n",c);
     FILE *file = fopen(file_path,"r");
     if(file){
         while(getline(&line, &len, file)!=-1){
-            //printf("%s",line);
             ret=strstr(line,word);
             int i;
             if(ret!=NULL) {
-                printf("%d: %s -> %s \n",ct ,file_path, line);
                 for(int i=0;i<strlen(line);i++){
                     if(line[i]!=' '){
                         char spc[2]={line[i],NULL};
@@ -60,9 +56,8 @@ void findwords(char file_path[128],char word[80]){
 
             }
             ct++;
-            //printf("OK\n");
         }
-    }else printf("no files\n");
+    }else fprintf(stderr,"No files\n");
 }
 void findfiles(DIR *dr,struct dirent *de,char path[],char word[],int rec){
 
@@ -74,26 +69,21 @@ void findfiles(DIR *dr,struct dirent *de,char path[],char word[],int rec){
     }
     DIR *temp;
     struct dirent *temp_p;
-    //printf("findfiles  ");
     while ((de = readdir(dr)) != NULL){
         int valid_f=scan_for_pos_vals(de->d_name);
         if(de->d_type==4){
             if(strcmp(de->d_name,"..")&&strcmp(de->d_name,".")&&rec){
-                //printf("folder:%s path:%s\n",de->d_name,path);
                 char temp_str[256]="";
                 strcat(temp_str,path);
                 strcat(temp_str,"/");
                 strcat(temp_str,de->d_name);
-                //temp=opendir(temp_str);
                 findfiles(temp,temp_p,temp_str,word,rec);
             }
         }else if(de->d_type==8&&valid_f){
-            //printf("           source code:%s path:%s\n",de->d_name,path);
             char temp_str[256]="";
             strcat(temp_str,path);
             strcat(temp_str,"/");
             strcat(temp_str,de->d_name);
-            //printf("%s\n",temp_str);
             findwords(temp_str,word);
         }
     }
@@ -109,7 +99,7 @@ int test_args(int argc,char *args[]){
                     strcpy(&word_arg[len-2],&args[1][len]);
                     return 0;
                 }else{
-                    printf(stderr,"Arguments not valid.\n");
+                    fprintf(stderr,"Arguments not valid.\n");
                     return 10;
                 }
         }else if(argc==3){
@@ -120,11 +110,11 @@ int test_args(int argc,char *args[]){
                 return 1;
             }
         }else{
-            printf(stderr,"Argument count is not enough.\n");
+            fprintf(stderr,"Argument count is not enough.\n");
             return 10;
         }
     }else{
-        printf(stderr,"Argument count is too much.");
+        fprintf(stderr,"Argument count is too much.");
         return 10;
     }
 
@@ -138,7 +128,7 @@ int codesearch(int argc,char *args[]){
     if(argc>=2){
         rec=test_args(argc,args);
     }else{
-        printf(stderr,"Argument count is not enough.\n");
+        fprintf(stderr,"Argument count is not enough.\n");
         return 10;
     }
     char ar[45];
